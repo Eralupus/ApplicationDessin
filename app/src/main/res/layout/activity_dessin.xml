@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".Dessin">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="174dp"
+            android:layout_height="wrap_content"
+            android:onClick="quitter"
+            android:text="@string/quitter" />
+
+        <Button
+            android:layout_width="211dp"
+            android:layout_height="wrap_content"
+            android:onClick="effacerTout"
+            android:text="@string/effacerTout" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="23px"
+        android:background="@color/white" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="38dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/red"
+            android:onClick="rouge" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/green"
+            android:onClick="vert" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/blue"
+            android:onClick="bleu" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/yellow"
+            android:onClick="jaune" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/black"
+            android:onClick="noir" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="15px"
+        android:background="@color/white" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="11dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/red"
+            android:onClick="rouge" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/green"
+            android:onClick="vert" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/blue"
+            android:onClick="bleu" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/yellow"
+            android:onClick="jaune" />
+
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/black"
+            android:onClick="noir" />
+        <Button
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:backgroundTint="@color/black"
+            android:onClick="noir" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ApplicationDessin </string>
+    <string name="btnNouveauDessin"> Nouveau Dessin </string>
+    <string name="reprendreDessin"> Reprendre Dessin </string>
+    <string name="effacerTout"> Effacer Tout</string>
+    <string name="quitter"> Quitter </string>
+
+</resources>
