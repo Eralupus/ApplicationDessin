@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".Dessin">
+    tools:context=".DessinActivity">
 
 
     <LinearLayout
@@ -26,11 +26,6 @@
             android:text="@string/effacerTout" />
 
     </LinearLayout>
-
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="23px"
-        android:background="@color/white" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -118,6 +113,13 @@
             android:onClick="noir" />
 
     </LinearLayout>
-
+    <FrameLayout
+        android:id="@+id/custom_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white">
+        <!-- Your custom view will be added here programmatically -->
+    </FrameLayout>
 
 </LinearLayout>

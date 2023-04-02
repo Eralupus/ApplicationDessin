@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-public class Accueil extends AppCompatActivity {
+public class AccueilActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +17,7 @@ public class Accueil extends AppCompatActivity {
     public void createNewDraw(View view)
     {
 
-        Intent intentActivity = new Intent(this, Dessin.class);
+        Intent intentActivity = new Intent(this, DessinActivity.class);
         startActivity(intentActivity);
 
 
@@ -27,7 +27,7 @@ public class Accueil extends AppCompatActivity {
     public void reprendreDessin(View view)
     {
 
-        Intent intentActivity = new Intent(this, Dessin.class);
+        Intent intentActivity = new Intent(this, DessinActivity.class);
         startActivity(intentActivity);
 
 
