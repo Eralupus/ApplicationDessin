@@ -7,12 +7,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.widget.ImageButton;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +32,13 @@ public class DessinActivity extends AppCompatActivity {
     private Canvas mCanvas,mTempCanvas;
     private Paint paint;
 
+    private ImageButton btnCarre;
+    private ImageButton btnCarrePlein;
+    private ImageButton btnCercle;
+    private ImageButton btnCerclePlein;
+    private ImageButton btnLigne;
+    private ImageButton btnChoixCouleur;
+    private ImageButton btnUndo;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +56,15 @@ public class DessinActivity extends AppCompatActivity {
         mCanvas = new Canvas(mBitmap);
         mTempBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mTempCanvas = new Canvas(mTempBitmap);
+
+        /* Récupère les IDS des éléments de la vue */
+        this.btnChoixCouleur = findViewById(R.id.btnChromatique);
+        this.btnUndo = findViewById(R.id.btnUndo);
+        this.btnCarre = findViewById(R.id.btnCarre);
+        this.btnCarre = findViewById(R.id.btnCarrePlein);
+        this.btnCercle = findViewById(R.id.btnCercle);
+        this.btnCercle = findViewById(R.id.btnCerclePlein);
+        this.btnLigne = findViewById(R.id.btnLigne);
     }
 
 
@@ -55,13 +78,43 @@ public class DessinActivity extends AppCompatActivity {
 
     }
 
+    public void setCarre (View view)
+    {
+        this.whatIdraw.setCarre(view);
+    }
 
+    public void setCarrePlein (View view)
+    {
+        this.whatIdraw.setCarrePlein(view);
+    }
 
+    public void setCercle (View view)
+    {
+        this.whatIdraw.setCercle(view);
+    }
+
+    public void setCerclePlein (View view)
+    {
+        this.whatIdraw.setCerclePlein(view);
+    }
+
+    public void setLigne (View view)
+    {
+        this.whatIdraw.setLigne(view);
+    }
+
+    public void choisirCouleur(View view)
+    {
+        //this.whatIdraw.choisirCouleur(view);
+    }
+
+    public void undo(View view)
+    {
+        this.whatIdraw.undo(view);
+    }
     public void quitter(View view) {
         finish();
     }
-
-
     class ViewDraw extends View implements View.OnTouchListener, View.OnClickListener
     {
         private Path path = new Path();
@@ -69,7 +122,7 @@ public class DessinActivity extends AppCompatActivity {
         private final int TOOL_ROUND     = 2;
         private final int TOOL_GOMME     = 3;
         private final int TOOL_TRACE     = 4;
-        private final int currentTool = TOOL_RECTANGLE;
+        private int currentTool = TOOL_RECTANGLE;
 
         private float xA;
         private float yA;
@@ -91,6 +144,22 @@ public class DessinActivity extends AppCompatActivity {
             paint.setStrokeCap(Paint.Cap.ROUND);
         }
 
+        private void openColorPicker(){
+            /*AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                @Override
+                public void onCancel(AmbilWarnaDialog dialog) {
+
+                }
+
+                @Override
+                public void onOk(AmbilWarnaDialog dialog, int color) {
+                    defaultColor = color;
+                    linearLayout.setBackgroundColor(defaultColor);
+                }
+            });
+            colorPicker.show();*/
+        }
+
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
@@ -102,6 +171,46 @@ public class DessinActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Log.d("Tag","On Click");
+
+        }
+
+        public void setCarre (View view)
+        {
+            this.currentTool = TOOL_RECTANGLE;
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
+        public void setCarrePlein (View view)
+        {
+            this.currentTool = TOOL_RECTANGLE;
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        }
+
+        public void setCercle (View view)
+        {
+            this.currentTool = TOOL_ROUND;
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
+        public void setCerclePlein (View view)
+        {
+            this.currentTool = TOOL_ROUND;
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        }
+
+        public void setLigne (View view)
+        {
+            this.currentTool = TOOL_TRACE;
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
+        public void choisirCouleur (View view, int couleur)
+        {
+            //this.currentColor = couleur;
+        }
+
+        public void undo(View view)
+        {
 
         }
 
@@ -138,7 +247,7 @@ public class DessinActivity extends AppCompatActivity {
                             break;
                         case TOOL_ROUND:
                             Paint paintTemp2 = new Paint();
-                            paintTemp.setColor(Color.parseColor("#330000FF"));
+                            paintTemp2.setColor(Color.parseColor("#330000FF"));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 mTempCanvas.drawOval(xA,yA,xB,yB,paintTemp2);
                             }
@@ -216,7 +325,4 @@ public class DessinActivity extends AppCompatActivity {
 
     public void noir(View view) {whatIdraw.setColor(Color.BLACK);}
 
-
-
 }
-

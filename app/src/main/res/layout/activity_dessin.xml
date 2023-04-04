@@ -9,6 +9,65 @@
 
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btnCarre"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/carrevide"
+            android:onClick="setCarre"/>
+
+        <ImageButton
+            android:id="@+id/btnCarrePlein"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/carreplein"
+            android:onClick="setCarrePlein"/>
+
+        <ImageButton
+            android:id="@+id/btnCercle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/cerclevide"
+            android:onClick="setCercle"/>
+
+        <ImageButton
+            android:id="@+id/btnCerclePlein"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/cercleplein"
+            android:onClick="setCerclePlein"/>
+
+        <ImageButton
+            android:id="@+id/btnLigne"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ligne"
+            android:onClick="setLigne"/>
+
+        <ImageButton
+            android:id="@+id/btnChromatique"
+            android:contentDescription="btnColor"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/chromatique"
+            android:onClick="choisirCouleur"/>
+
+        <ImageButton
+            android:id="@+id/btnUndo"
+            android:contentDescription="btnUndo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/undo"
+            android:onClick="undo"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -70,49 +129,6 @@
         android:layout_height="15px"
         android:background="@color/white" />
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="11dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/red"
-            android:onClick="rouge" />
-
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/green"
-            android:onClick="vert" />
-
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/blue"
-            android:onClick="bleu" />
-
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/yellow"
-            android:onClick="jaune" />
-
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/black"
-            android:onClick="noir" />
-        <Button
-            android:layout_width="55dp"
-            android:layout_height="45dp"
-            android:backgroundTint="@color/black"
-            android:onClick="noir" />
-
-    </LinearLayout>
     <FrameLayout
         android:id="@+id/custom_view_container"
         android:layout_width="match_parent"
