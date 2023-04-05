@@ -1,12 +1,13 @@
 package com.example.applicationdessin;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Rect;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,15 +15,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.content.SharedPreferences;
 
-
-import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
 
 public class DessinActivity extends AppCompatActivity {
 
@@ -40,6 +35,21 @@ public class DessinActivity extends AppCompatActivity {
     private ImageButton btnChoixCouleur;
     private ImageButton btnUndo;
 
+    private ArrayList<String> alFormes;
+    private ArrayList<Integer> alCoul;
+    private ArrayList<Integer> alXA;
+    private ArrayList<Integer> alXB;
+    private ArrayList<Integer> alYA;
+    private ArrayList<Integer> alYB;
+
+    private View tv;
+    private EditText etkey, etval;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor spEditor;
+
+    private int height;
+    private int width;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dessin);
@@ -49,15 +59,25 @@ public class DessinActivity extends AppCompatActivity {
         whatIdraw = new ViewDraw(this);
         container.addView(whatIdraw);
 
-        // Set up the Bitmap object to store the drawing
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int height = getResources().getDisplayMetrics().heightPixels;
-        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
-        mTempBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        mTempCanvas = new Canvas(mTempBitmap);
+        /*tv = findViewById(R.id.tvsp);
+        etkey = findViewById(R.id.etspkey);
+        etval = findViewById(R.id.etspval);
+        initSP();*/
 
-        /* Récupère les IDS des éléments de la vue */
+        this.alFormes = new ArrayList<String>();
+        this.alCoul = new ArrayList<Integer>();
+        this.alXA = new ArrayList<Integer>();
+        this.alYA = new ArrayList<Integer>();
+        this.alXB = new ArrayList<Integer>();
+        this.alYB = new ArrayList<Integer>();
+
+        // Set up the Bitmap object to store the drawing
+        this.width = getResources().getDisplayMetrics().widthPixels;
+        this.height = getResources().getDisplayMetrics().heightPixels;
+        this.initGraphics();
+
+
+        /* Récupère les IDS des boutons de la vue */
         this.btnChoixCouleur = findViewById(R.id.btnChromatique);
         this.btnUndo = findViewById(R.id.btnUndo);
         this.btnCarre = findViewById(R.id.btnCarre);
@@ -67,72 +87,174 @@ public class DessinActivity extends AppCompatActivity {
         this.btnLigne = findViewById(R.id.btnLigne);
     }
 
-
-    public void ZoneDessin(View view)
+    public void initGraphics()
     {
-
+        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
+        mTempBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mTempCanvas = new Canvas(mTempBitmap);
     }
 
+    public void onSaveInstanceState(Bundle bagOfData)
+    {
+        bagOfData.putStringArrayList("formes", this.alFormes);
+        bagOfData.putIntegerArrayList("coul", this.alCoul);
+        bagOfData.putIntegerArrayList("xa", this.alXA);
+        bagOfData.putIntegerArrayList("ya", this.alYA);
+        bagOfData.putIntegerArrayList("xb", this.alXB);
+        bagOfData.putIntegerArrayList("yb", this.alYB);
+        super.onSaveInstanceState(bagOfData);
+    }
+
+    public void onRestoreInstanceState(Bundle bagOfData)
+    {
+        super.onRestoreInstanceState(bagOfData);
+        this.alFormes = bagOfData.getStringArrayList("formes");
+        this.alCoul = bagOfData.getIntegerArrayList("coul");
+        this.alXA = bagOfData.getIntegerArrayList("xa");
+        this.alYA = bagOfData.getIntegerArrayList("ya");
+        this.alXB = bagOfData.getIntegerArrayList("xb");
+        this.alYB = bagOfData.getIntegerArrayList("yb");
+
+        this.whatIdraw.recreate(this.alFormes, this.alCoul, this.alXA, this.alYA, this.alXB, this.alYB);
+    }
+
+    public void addForme(String forme){ this.alFormes.add(forme);}
+    public void addCoul(Integer coul){ this.alCoul.add(coul);}
+    public void addXA(Integer x){ this.alXA.add(x);}
+    public void addXB(Integer x){ this.alXB.add(x);}
+    public void addYA(Integer y){ this.alYA.add(y);}
+    public void addYB(Integer y){ this.alYB.add(y);}
+
+
+    //get a reference to a SharedPreferences object and to its corresponding editor
+    private void initSP() {
+        sp = getPreferences(MODE_PRIVATE);
+        spEditor = sp.edit();
+    }
+
+    /**
+     * method for the button for reading shared preferences
+     * @param v
+     */
+    public void readScores(View v) {
+        String spContent = new String("------ SP ------\n");
+        for(String key: sp.getAll().keySet()) {
+            spContent+="key->val : "+key+" -> "+sp.getString(key,"empty")+"\n";
+        }
+        //tv.setText(spContent);
+    }
+    /**
+     * method for the button for adding a new entry into
+     * the shared preferences
+     * @param v
+     */
+    public void addToScores(View v) {
+        String key = etkey.getText().toString();
+        String val = etval.getText().toString();
+        if((key.length() > 0) && (val.length() > 0)) {
+            //spScoresEditor.putString(key,val);
+        }
+    }
+    /**
+     * method for the button for removing one entry from
+     * the shared preferences knowing the key
+     * @param v
+     */
+    public void removeFromScores(View v) {
+        String key = etkey.getText().toString();
+        if(key.length() > 0) {
+            //spScoresEditor.remove(key);
+        }
+    }
+
+    public void quitter(View view)
+    {
+        finish();
+    }
     public void effacerTout(View view)
     {
-
-    }
-
-    public void setCarre (View view)
-    {
-        this.whatIdraw.setCarre(view);
-    }
-
-    public void setCarrePlein (View view)
-    {
-        this.whatIdraw.setCarrePlein(view);
-    }
-
-    public void setCercle (View view)
-    {
-        this.whatIdraw.setCercle(view);
-    }
-
-    public void setCerclePlein (View view)
-    {
-        this.whatIdraw.setCerclePlein(view);
-    }
-
-    public void setLigne (View view)
-    {
-        this.whatIdraw.setLigne(view);
-    }
-
-    public void choisirCouleur(View view)
-    {
-        //this.whatIdraw.choisirCouleur(view);
+        this.alFormes = new ArrayList<String>();
+        this.alCoul = new ArrayList<Integer>();
+        this.alXA = new ArrayList<Integer>();
+        this.alYA = new ArrayList<Integer>();
+        this.alXB = new ArrayList<Integer>();
+        this.alYB = new ArrayList<Integer>();
+        this.initGraphics();
+        this.whatIdraw.invalidate();
     }
 
     public void undo(View view)
     {
-        this.whatIdraw.undo(view);
+        int indice = this.alFormes.size()-1;
+        if ( indice >= 0 ) {
+            this.alFormes.remove(indice);
+            this.alCoul.remove(indice);
+            this.alXA.remove(indice);
+            this.alYA.remove(indice);
+            this.alXB.remove(indice);
+            this.alYB.remove(indice);
+            this.initGraphics();
+            this.whatIdraw.recreate(this.alFormes, this.alCoul, this.alXA, this.alYA, this.alXB, this.alYB);
+        }
     }
-    public void quitter(View view) {
-        finish();
-    }
-    class ViewDraw extends View implements View.OnTouchListener, View.OnClickListener
+
+    public void choisirCouleur(View view)
     {
-        private Path path = new Path();
+        openColorPicker();
+    }
+
+    private void openColorPicker() {
+        /*AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                defaultColor = color;
+                this.whatIdraw.setColor(defaultColor);
+            }
+        });
+        colorPicker.show();*/
+    }
+
+    public void setCarre (View view) {this.whatIdraw.setCarre(view);}
+
+    public void setCarrePlein (View view) {this.whatIdraw.setCarrePlein(view);}
+
+    public void setCercle (View view) {this.whatIdraw.setCercle(view);}
+
+    public void setCerclePlein (View view) {this.whatIdraw.setCerclePlein(view);}
+
+    public void setLigne (View view) {this.whatIdraw.setLigne(view);}
+
+    class ViewDraw extends View implements View.OnTouchListener, View.OnClickListener {
         private final int TOOL_RECTANGLE = 1;
-        private final int TOOL_ROUND     = 2;
-        private final int TOOL_GOMME     = 3;
-        private final int TOOL_TRACE     = 4;
-        private int currentTool = TOOL_RECTANGLE;
+        private final int TOOL_ROUND = 2;
+        private final int TOOL_GOMME = 3;
+        private final int TOOL_TRACE = 4;
+        private int currentTool;
 
         private float xA;
         private float yA;
         private float xB;
         private float yB;
+        private ArrayList<String> alFormes;
+        private ArrayList<Integer> alCoul;
+        private ArrayList<Integer> alXA;
+        private ArrayList<Integer> alXB;
+        private ArrayList<Integer> alYA;
+        private ArrayList<Integer> alYB;
         private boolean isDrawing = false;
         private int currentColor = Color.BLACK;
+        private boolean recreate= false;
+        private String style;
+        private int w;
+        private int h;
 
-        public ViewDraw(Context context)
-        {
+        public ViewDraw(Context context) {
             super(context);
             setOnTouchListener(this);
             setOnClickListener(this);
@@ -144,20 +266,26 @@ public class DessinActivity extends AppCompatActivity {
             paint.setStrokeCap(Paint.Cap.ROUND);
         }
 
-        private void openColorPicker(){
-            /*AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-                @Override
-                public void onCancel(AmbilWarnaDialog dialog) {
+        public void effacerTout()
+        {
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(mBitmap);
+            mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mTempCanvas = new Canvas(mTempBitmap);
+            this.invalidate();
+        }
+        public boolean recreate(ArrayList<String> alFormes, ArrayList<Integer> alCoul, ArrayList<Integer> alXA, ArrayList<Integer> alYA, ArrayList<Integer> alXB, ArrayList<Integer> alYB) {
 
-                }
+            this.alFormes = alFormes;
+            this.alCoul = alCoul;
+            this.alXA = alXA;
+            this.alYA = alYA;
+            this.alXB = alXB;
+            this.alYB = alYB;
 
-                @Override
-                public void onOk(AmbilWarnaDialog dialog, int color) {
-                    defaultColor = color;
-                    linearLayout.setBackgroundColor(defaultColor);
-                }
-            });
-            colorPicker.show();*/
+            this.recreate=true;
+            this.invalidate();
+            return false;
         }
 
         @Override
@@ -166,70 +294,24 @@ public class DessinActivity extends AppCompatActivity {
             mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(mBitmap);
             mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            this.w =w;
+            this.h =h;
             mTempCanvas = new Canvas(mTempBitmap);
         }
-        @Override
-        public void onClick(View view) {
-            Log.d("Tag","On Click");
-
-        }
-
-        public void setCarre (View view)
-        {
-            this.currentTool = TOOL_RECTANGLE;
-            paint.setStyle(Paint.Style.STROKE);
-        }
-
-        public void setCarrePlein (View view)
-        {
-            this.currentTool = TOOL_RECTANGLE;
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        }
-
-        public void setCercle (View view)
-        {
-            this.currentTool = TOOL_ROUND;
-            paint.setStyle(Paint.Style.STROKE);
-        }
-
-        public void setCerclePlein (View view)
-        {
-            this.currentTool = TOOL_ROUND;
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        }
-
-        public void setLigne (View view)
-        {
-            this.currentTool = TOOL_TRACE;
-            paint.setStyle(Paint.Style.STROKE);
-        }
-
-        public void choisirCouleur (View view, int couleur)
-        {
-            //this.currentColor = couleur;
-        }
-
-        public void undo(View view)
-        {
-
-        }
 
         @Override
-        public boolean onTouch(View view,MotionEvent event) {
+        public boolean onTouch(View view, MotionEvent event) {
             float touchX = event.getX();
             float touchY = event.getY();
             //respond to down, move and up events
+            recreate = false;
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     isDrawing = true;
                     xA = touchX;
                     yA = touchY;
-                    if (currentTool == TOOL_TRACE) {
-                        path.moveTo(touchX, touchY);
-                    }
-                    invalidate();
-
                     break;
+
                 case MotionEvent.ACTION_MOVE:
                     isDrawing = true;
                     xB = touchX;
@@ -238,15 +320,22 @@ public class DessinActivity extends AppCompatActivity {
                     {
                         case TOOL_RECTANGLE:
                             Paint paintTemp = new Paint();
+                            mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                            mTempCanvas = new Canvas(mTempBitmap);
                             paintTemp.setColor(Color.parseColor("#330000FF"));
                             mTempCanvas.drawRect(xA,yA,xB,yB,paintTemp);
                             break;
                         case TOOL_TRACE:
-                            path.lineTo(touchX, touchY);
-                            mCanvas.drawPath(path, paint);
+                            Paint paintTemp1 = new Paint();
+                            mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                            mTempCanvas = new Canvas(mTempBitmap);
+                            paintTemp1.setColor(Color.parseColor("#330000FF"));
+                            mTempCanvas.drawLine(xA,yA, xB,yB, paintTemp1);
                             break;
                         case TOOL_ROUND:
                             Paint paintTemp2 = new Paint();
+                            mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                            mTempCanvas = new Canvas(mTempBitmap);
                             paintTemp2.setColor(Color.parseColor("#330000FF"));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 mTempCanvas.drawOval(xA,yA,xB,yB,paintTemp2);
@@ -254,75 +343,193 @@ public class DessinActivity extends AppCompatActivity {
                             break;
 
                     }
-
                     invalidate();
-
                     break;
+
                 case MotionEvent.ACTION_UP:
                     isDrawing = false;
 
-                    switch (currentTool)
-                    {
+                    switch (currentTool) {
                         case TOOL_RECTANGLE:
                             mTempBitmap.eraseColor(Color.TRANSPARENT);
                             paint.setColor(this.currentColor);
                             mCanvas.drawRect(xA,yA,xB,yB,paint);
+                            if ( style=="vide" )
+                                addForme("rectangle");
+                            else if ( style=="plein" )
+                                addForme("rectangleplein");
+
+                            addCoul(currentColor);
+                            addXA((int) xA);
+                            addXB((int) xB);
+                            addYA((int) yA);
+                            addYB((int) yB);
                             break;
+
                         case TOOL_TRACE:
                             paint.setColor(this.currentColor);
-                            path.lineTo(touchX, touchY);
-                            mCanvas.drawPath(path, paint);
-                            path.reset();
+                            mCanvas.drawLine(xA,yA, xB,yB, paint);
+                            addForme("ligne");
+                            addCoul(currentColor);
+                            addXA((int) xA);
+                            addXB((int) xB);
+                            addYA((int) yA);
+                            addYB((int) yB);
                             break;
+
                         case TOOL_ROUND:
                             paint.setColor(this.currentColor);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 mCanvas.drawOval(xA,yA,xB,yB,paint);
                             }
+                            if ( style=="vide" )
+                                addForme("cercle");
+                            else if ( style=="plein" )
+                                addForme("cercleplein");
+
+                            addCoul(currentColor);
+                            addXA((int) xA);
+                            addXB((int) xB);
+                            addYA((int) yA);
+                            addYB((int) yB);
                             break;
 
                     }
-                    xA=xB= touchX;
-                    yA=yB= touchY;
-                    invalidate();
+                    xA = xB = touchX;
+                    yA = yB = touchY;
 
                     break;
+
                 default:
-                    return true;
+                    break;
             }
             //redraw
-            invalidate();
-            return true;
+            this.invalidate();
+            return false;
         }
+
         @Override
         protected void onDraw(Canvas canvas) {
-            canvas.drawBitmap(mBitmap, 0 , 0, paint);
-            if (isDrawing)
-            {
-                switch (currentTool)
-                {
-                    case TOOL_RECTANGLE:
-                        canvas.drawBitmap(mTempBitmap, 0, 0, null);
-                        break;
-                }
 
+            if (!recreate) {
+                canvas.drawBitmap(mBitmap, 0 , 0, paint);
+                if (isDrawing)
+                {
+                    switch (currentTool)
+                    {
+                        case TOOL_RECTANGLE:
+                            canvas.drawBitmap(mTempBitmap, 0, 0, null);
+                            break;
+
+                        case TOOL_ROUND:
+                            canvas.drawBitmap(mTempBitmap, 0, 0, null);
+                            break;
+
+                        case TOOL_TRACE:
+                            canvas.drawBitmap(mTempBitmap, 0, 0, null);
+                            break;
+                    }
+                }
+            }
+
+            if (recreate) {
+                for (int cpt = 0; cpt < alFormes.size(); cpt++) {
+                    switch (alFormes.get(cpt)) {
+                        case "rectangle":
+                            paint.setColor(alCoul.get(cpt));
+                            paint.setStyle(Paint.Style.STROKE);
+                            mCanvas.drawRect((float) alXA.get(cpt), (float) alYA.get(cpt), (float) alXB.get(cpt), (float) alYB.get(cpt), paint);
+                            break;
+
+                        case "rectangleplein":
+                            paint.setColor(alCoul.get(cpt));
+                            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                            mCanvas.drawRect((float) alXA.get(cpt), (float) alYA.get(cpt), (float) alXB.get(cpt), (float) alYB.get(cpt), paint);
+                            break;
+
+                        case "cercle":
+                            paint.setColor(alCoul.get(cpt));
+                            paint.setStyle(Paint.Style.STROKE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                mCanvas.drawOval((float) alXA.get(cpt), (float) alYA.get(cpt), (float) alXB.get(cpt), (float) alYB.get(cpt), paint);
+                            }
+                            break;
+
+                        case "cercleplein":
+                            paint.setColor(alCoul.get(cpt));
+                            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                mCanvas.drawOval((float) alXA.get(cpt), (float) alYA.get(cpt), (float) alXB.get(cpt), (float) alYB.get(cpt), paint);
+                            }
+                            break;
+
+                        case "ligne":
+                            paint.setColor(alCoul.get(cpt));
+                            mCanvas.drawLine((float) alXA.get(cpt), (float) alYA.get(cpt), (float) alXB.get(cpt), (float) alYB.get(cpt), paint);
+                            break;
+
+                        default:
+                            break;
+                    }
+                    canvas.drawBitmap(mBitmap, 0 , 0, paint);
+                }
+                recreate = false;
             }
         }
-        public void setColor(int color){
+
+        @Override
+        public void onClick(View view) {Log.d("Tag", "On Click");}
+
+        public void setCarre(View view) {
+            this.currentTool = TOOL_RECTANGLE;
+            paint.setStyle(Paint.Style.STROKE);
+            style = "vide";
+        }
+
+        public void setCarrePlein(View view) {
+            this.currentTool = TOOL_RECTANGLE;
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            style = "plein";
+        }
+
+        public void setCercle(View view) {
+            this.currentTool = TOOL_ROUND;
+            paint.setStyle(Paint.Style.STROKE);
+            style = "vide";
+        }
+
+        public void setCerclePlein(View view) {
+            this.currentTool = TOOL_ROUND;
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            style = "plein";
+        }
+
+        public void setLigne(View view) {
+            this.currentTool = TOOL_TRACE;
+        }
+
+        public void setColor(int color) {
             this.currentColor = color;
             paint.setColor(color);
         }
     }
 
+    public void rouge(View view) {
+        whatIdraw.setColor(Color.RED);
+    }
 
-    public void rouge(View view) {whatIdraw.setColor(Color.RED);}
+    public void vert(View view) {
+        whatIdraw.setColor(Color.GREEN);
+    }
 
-    public void vert(View view) {whatIdraw.setColor(Color.GREEN);}
+    public void bleu(View view) {
+        whatIdraw.setColor(Color.BLUE);
+    }
 
-    public void bleu(View view) {whatIdraw.setColor(Color.BLUE);}
-
-    public void jaune(View view) {whatIdraw.setColor(Color.YELLOW);}
-
-    public void noir(View view) {whatIdraw.setColor(Color.BLACK);}
-
+    public void jaune(View view) {
+        whatIdraw.setColor(Color.YELLOW);
+    }
+    public void noir(View view) {
+        whatIdraw.setColor(Color.BLACK);
+    }
 }
