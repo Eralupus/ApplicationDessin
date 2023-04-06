@@ -90,7 +90,6 @@ public class DessinActivity extends AppCompatActivity {
 
 
         /* Récupère les IDS des boutons de la vue */
-        this.btnChoixCouleur = findViewById(R.id.btnChromatique);
         this.btnUndo = findViewById(R.id.btnUndo);
         this.btnCarre = findViewById(R.id.btnCarre);
         this.btnCarre = findViewById(R.id.btnCarrePlein);
@@ -257,14 +256,6 @@ public class DessinActivity extends AppCompatActivity {
             paint.setStrokeCap(Paint.Cap.ROUND);
         }
 
-        public void effacerTout()
-        {
-            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            mCanvas = new Canvas(mBitmap);
-            mTempBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            mTempCanvas = new Canvas(mTempBitmap);
-            this.invalidate();
-        }
         public boolean recreate(ArrayList<String> alFormes, ArrayList<Integer> alCoul, ArrayList<Integer> alXA, ArrayList<Integer> alYA, ArrayList<Integer> alXB, ArrayList<Integer> alYB) {
 
             this.alFormes = alFormes;
