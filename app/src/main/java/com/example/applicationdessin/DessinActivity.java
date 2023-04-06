@@ -3,6 +3,7 @@ package com.example.applicationdessin;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,9 +18,19 @@ import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.content.SharedPreferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class DessinActivity extends AppCompatActivity {
+
+    public static final String SHARE_PREFS = "sharedPref";
+    public static final String AL_FORMES   = "alformes";
+    public static final String AL_COUL   = "alcoul";
+    public static final String AL_XA   = "alxA";
+    public static final String AL_YA  = "alyA";
+    public static final String AL_XB   = "alxB";
+    public static final String AL_YB   = "alyB";
 
     ViewDraw whatIdraw;
     private Bitmap mBitmap;
@@ -63,13 +74,24 @@ public class DessinActivity extends AppCompatActivity {
         etkey = findViewById(R.id.etspkey);
         etval = findViewById(R.id.etspval);
         initSP();*/
-
-        this.alFormes = new ArrayList<String>();
-        this.alCoul = new ArrayList<Integer>();
-        this.alXA = new ArrayList<Integer>();
-        this.alYA = new ArrayList<Integer>();
-        this.alXB = new ArrayList<Integer>();
-        this.alYB = new ArrayList<Integer>();
+        /*
+        * Nouveau ou Reprendre
+        * */
+        Intent i = getIntent();
+        String type = i.getStringExtra("TYPE");
+        if (type.equals("NEW"))
+        {
+            this.alFormes = new ArrayList<String>();
+            this.alCoul = new ArrayList<Integer>();
+            this.alXA = new ArrayList<Integer>();
+            this.alYA = new ArrayList<Integer>();
+            this.alXB = new ArrayList<Integer>();
+            this.alYB = new ArrayList<Integer>();
+        }
+        if (type.equals("RESUME"))
+        {
+            loadData();
+        }
 
         // Set up the Bitmap object to store the drawing
         this.width = getResources().getDisplayMetrics().widthPixels;
@@ -170,7 +192,48 @@ public class DessinActivity extends AppCompatActivity {
 
     public void quitter(View view)
     {
+        Log.d("TAG","saveDATA");
+        saveData();
         finish();
+    }
+    public void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARE_PREFS,MODE_PRIVATE);
+        SharedPreferences.Editor editor     = sharedPreferences.edit();
+        try {
+            editor.putString (AL_FORMES,ObjectSerializer.serialize(this.alFormes));
+            editor.putString (AL_COUL,ObjectSerializer.serialize(this.alCoul));
+            editor.putString (AL_XA,ObjectSerializer.serialize(this.alXA));
+            editor.putString (AL_YA,ObjectSerializer.serialize(this.alYA));
+            editor.putString (AL_XB,ObjectSerializer.serialize(this.alXB));
+            editor.putString (AL_YB,ObjectSerializer.serialize(this.alYB));
+
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        editor.commit();
+
+
+    }
+    public void loadData() {
+        SharedPreferences prefs = getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE);
+        Log.d("TAG","LOAD DATA");
+
+        try {
+            this.alFormes = (ArrayList<String>) ObjectSerializer.deserialize(prefs.getString(AL_FORMES,ObjectSerializer.serialize(new ArrayList<String>())));
+            this.alCoul = (ArrayList<Integer>) ObjectSerializer.deserialize(prefs.getString(AL_COUL,ObjectSerializer.serialize(new ArrayList<Integer>())));
+            this.alXA = (ArrayList<Integer>) ObjectSerializer.deserialize(prefs.getString(AL_XA,ObjectSerializer.serialize(new ArrayList<Integer>())));
+            this.alYA = (ArrayList<Integer>) ObjectSerializer.deserialize(prefs.getString(AL_YA,ObjectSerializer.serialize(new ArrayList<Integer>())));
+            this.alXB = (ArrayList<Integer>) ObjectSerializer.deserialize(prefs.getString(AL_XB,ObjectSerializer.serialize(new ArrayList<Integer>())));
+            this.alYB = (ArrayList<Integer>) ObjectSerializer.deserialize(prefs.getString(AL_YB,ObjectSerializer.serialize(new ArrayList<Integer>())));
+
+
+        }
+        catch (IOException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        this.whatIdraw.recreate(this.alFormes, this.alCoul, this.alXA, this.alYA, this.alXB, this.alYB);
+
     }
     public void effacerTout(View view)
     {

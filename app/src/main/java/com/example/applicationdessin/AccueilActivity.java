@@ -18,6 +18,7 @@ public class AccueilActivity extends AppCompatActivity {
     {
 
         Intent intentActivity = new Intent(this, DessinActivity.class);
+        intentActivity.putExtra("TYPE","NEW");
         startActivity(intentActivity);
 
 
@@ -28,6 +29,8 @@ public class AccueilActivity extends AppCompatActivity {
     {
 
         Intent intentActivity = new Intent(this, DessinActivity.class);
+        intentActivity.putExtra("TYPE","RESUME");
+
         startActivity(intentActivity);
 
 
