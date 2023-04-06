@@ -1,6 +1,7 @@
 package com.example.applicationdessin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,10 +17,13 @@ import android.view.View;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.content.SharedPreferences;
+import android.widget.LinearLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 
 public class DessinActivity extends AppCompatActivity {
 
@@ -44,6 +47,7 @@ public class DessinActivity extends AppCompatActivity {
     private ImageButton btnCerclePlein;
     private ImageButton btnLigne;
     private ImageButton btnUndo;
+    private ImageButton btnChoixCouleur;
 
     private ArrayList<String> alFormes;
     private ArrayList<Integer> alCoul;
@@ -54,6 +58,9 @@ public class DessinActivity extends AppCompatActivity {
 
     private int height;
     private int width;
+    private int defaultColor;
+
+    private LinearLayout linearLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +103,32 @@ public class DessinActivity extends AppCompatActivity {
         this.btnCercle = findViewById(R.id.btnCercle);
         this.btnCercle = findViewById(R.id.btnCerclePlein);
         this.btnLigne = findViewById(R.id.btnLigne);
+        this.btnChoixCouleur = findViewById(R.id.btnChromatique);
+
+        this.linearLayout = findViewById(R.id.rootId);
+        this.defaultColor = ContextCompat.getColor(DessinActivity.this, R.color.white);
+
+        btnChoixCouleur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openColorPicker();
+            }
+        });
+    }
+
+    private void openColorPicker(){
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                whatIdraw.setColor(color);
+            }
+        });
+        colorPicker.show();
     }
 
     public void initGraphics()
@@ -269,6 +302,8 @@ public class DessinActivity extends AppCompatActivity {
             this.invalidate();
             return false;
         }
+
+
 
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
