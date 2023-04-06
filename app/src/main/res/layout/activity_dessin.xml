@@ -50,14 +50,6 @@
             android:onClick="setLigne"/>
 
         <ImageButton
-            android:id="@+id/btnChromatique"
-            android:contentDescription="btnColor"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/chromatique"
-            android:onClick="choisirCouleur"/>
-
-        <ImageButton
             android:id="@+id/btnUndo"
             android:contentDescription="btnUndo"
             android:layout_width="48dp"

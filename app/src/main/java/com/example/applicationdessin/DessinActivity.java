@@ -43,7 +43,6 @@ public class DessinActivity extends AppCompatActivity {
     private ImageButton btnCercle;
     private ImageButton btnCerclePlein;
     private ImageButton btnLigne;
-    private ImageButton btnChoixCouleur;
     private ImageButton btnUndo;
 
     private ArrayList<String> alFormes;
@@ -52,11 +51,6 @@ public class DessinActivity extends AppCompatActivity {
     private ArrayList<Integer> alXB;
     private ArrayList<Integer> alYA;
     private ArrayList<Integer> alYB;
-
-    private View tv;
-    private EditText etkey, etval;
-    private SharedPreferences sp;
-    private SharedPreferences.Editor spEditor;
 
     private int height;
     private int width;
@@ -70,10 +64,6 @@ public class DessinActivity extends AppCompatActivity {
         whatIdraw = new ViewDraw(this);
         container.addView(whatIdraw);
 
-        /*tv = findViewById(R.id.tvsp);
-        etkey = findViewById(R.id.etspkey);
-        etval = findViewById(R.id.etspval);
-        initSP();*/
         /*
         * Nouveau ou Reprendre
         * */
@@ -148,48 +138,6 @@ public class DessinActivity extends AppCompatActivity {
     public void addYA(Integer y){ this.alYA.add(y);}
     public void addYB(Integer y){ this.alYB.add(y);}
 
-
-    //get a reference to a SharedPreferences object and to its corresponding editor
-    private void initSP() {
-        sp = getPreferences(MODE_PRIVATE);
-        spEditor = sp.edit();
-    }
-
-    /**
-     * method for the button for reading shared preferences
-     * @param v
-     */
-    public void readScores(View v) {
-        String spContent = new String("------ SP ------\n");
-        for(String key: sp.getAll().keySet()) {
-            spContent+="key->val : "+key+" -> "+sp.getString(key,"empty")+"\n";
-        }
-        //tv.setText(spContent);
-    }
-    /**
-     * method for the button for adding a new entry into
-     * the shared preferences
-     * @param v
-     */
-    public void addToScores(View v) {
-        String key = etkey.getText().toString();
-        String val = etval.getText().toString();
-        if((key.length() > 0) && (val.length() > 0)) {
-            //spScoresEditor.putString(key,val);
-        }
-    }
-    /**
-     * method for the button for removing one entry from
-     * the shared preferences knowing the key
-     * @param v
-     */
-    public void removeFromScores(View v) {
-        String key = etkey.getText().toString();
-        if(key.length() > 0) {
-            //spScoresEditor.remove(key);
-        }
-    }
-
     public void quitter(View view)
     {
         Log.d("TAG","saveDATA");
@@ -200,6 +148,7 @@ public class DessinActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARE_PREFS,MODE_PRIVATE);
         SharedPreferences.Editor editor     = sharedPreferences.edit();
         try {
+
             editor.putString (AL_FORMES,ObjectSerializer.serialize(this.alFormes));
             editor.putString (AL_COUL,ObjectSerializer.serialize(this.alCoul));
             editor.putString (AL_XA,ObjectSerializer.serialize(this.alXA));
@@ -260,27 +209,6 @@ public class DessinActivity extends AppCompatActivity {
             this.initGraphics();
             this.whatIdraw.recreate(this.alFormes, this.alCoul, this.alXA, this.alYA, this.alXB, this.alYB);
         }
-    }
-
-    public void choisirCouleur(View view)
-    {
-        openColorPicker();
-    }
-
-    private void openColorPicker() {
-        /*AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-            @Override
-            public void onCancel(AmbilWarnaDialog dialog) {
-
-            }
-
-            @Override
-            public void onOk(AmbilWarnaDialog dialog, int color) {
-                defaultColor = color;
-                this.whatIdraw.setColor(defaultColor);
-            }
-        });
-        colorPicker.show();*/
     }
 
     public void setCarre (View view) {this.whatIdraw.setCarre(view);}
